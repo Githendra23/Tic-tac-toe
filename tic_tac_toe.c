@@ -9,9 +9,10 @@ enum ShouldGameContinue{Yes, No};
 enum ShouldGameContinue shouldGameContinue = Yes;
 
 void board();
-int checkwin();
+void checkwin();
 
 int player;
+int isDraw = No;
 
 int main() {
     while(shouldGameContinue == Yes) {
@@ -50,6 +51,14 @@ int main() {
         checkwin();
         player++;
     }
+    board();
+
+    if(isDraw == Yes) {    
+        printf("It's a draw\n"); 
+    }
+    else {
+        printf("Player %d is the winner !\n", ((player % 2) != 0) ? 1 : 2); // != because of line 52
+    }
     printf("Press Any Key to Exit...\n");  
     getch();
 }
@@ -77,50 +86,40 @@ void board() {
     }
 }
 
-int checkwin() {
-    for(int i = 1; i <= 8; i++) {
-        if(i == 2 || i == 5 || i == 8) {
-            if(square[i - 1] == square[i + 0] && square[i + 1] == square[i + 0]) {                // horizontal
-                winColour[i - 1] = square[i - 1];
-                winColour[i + 0] = square[i + 0];
-                winColour[i + 1] = square[i + 1];
-                board();
-                printf("Player %d is the winner\n", ((player % 2) == 0) ? 1 : 2);
-                shouldGameContinue = No;
-                break;
-            }
+void checkwin() {
+    for(int i = 2; i <= 8; i += 3) {  // horizontal
+        if(square[i - 1] == square[i + 0] && square[i + 1] == square[i + 0]) { 
+            winColour[i - 1] = square[i - 1];
+            winColour[i + 0] = square[i + 0];
+            winColour[i + 1] = square[i + 1];
+            shouldGameContinue = No;
+            return;
         }
-
-        if(i == 4 || i == 5 || i == 6) {
-            if(square[i - 3] == square[i + 0] && square[i + 3] == square[i + 0]) {                // vertical
-                winColour[i - 3] = square[i - 3];
-                winColour[i + 0] = square[i + 0];
-                winColour[i + 3] = square[i + 3];
-                board();
-                printf("Player %d is the winner\n", ((player % 2) == 0) ? 1 : 2);
-                shouldGameContinue = No;
-                break;
-            }
+    }    
+    for(int i = 4; i <= 6; i++) { // vertical
+        if(square[i - 3] == square[i + 0] && square[i + 3] == square[i + 0]) {
+            winColour[i - 3] = square[i - 3];
+            winColour[i + 0] = square[i + 0];
+            winColour[i + 3] = square[i + 3];
+            shouldGameContinue = No;
+            return;
         }
-
-        if(i == 1 || i == 3) {
-            if(square[i + 0] == square[5] && square[((i % 3) == 0) ? 7 : 9] == square[5]) {       // cross
-                winColour[i + 0] = square[i + 0];
-                winColour[5] = square[5];
-                winColour[((i % 3) == 0) ? 7 : 9] = square[((i % 3) == 0) ? 7 : 9];
-                board();
-                printf("Player %d is the winner\n", ((player % 2) == 0) ? 1 : 2);
-                shouldGameContinue = No;
-                break;
-            }
-        }   
+    }
+    for(int i = 1; i <= 3; i += 2) { // cross
+        if(square[i + 0] == square[5] && square[((i % 3) == 0) ? 7 : 9] == square[5]) {
+            winColour[i + 0] = square[i + 0];
+            winColour[5] = square[5];
+            winColour[((i % 3) == 0) ? 7 : 9] = square[((i % 3) == 0) ? 7 : 9];
+            shouldGameContinue = No;
+            return;
+        }  
     }
 
     if(square[1] != '1' && square[2] != '2' && square[3] != '3' && 
        square[4] != '4' && square[5] != '5' && square[6] != '6' && 
        square[7] != '7' && square[8] != '8' && square[9] != '9') {
-        board();
-        printf("It's a draw\n");
         shouldGameContinue = No;
+        isDraw = Yes;
+        return;
     }
 }
